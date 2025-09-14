@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Organizador Gráfico – Testing & QA (Pseudo‑Notion + Trello)</title>
+  <style>
+    
+    :root{
+      --bg:#fbfbfd; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb;
+      --accent:#2563eb; --accent-2:#10b981; --accent-3:#f59e0b; --accent-4:#ef4444;
+      --shadow:0 6px 24px rgba(0,0,0,.08); --radius:16px; --radius-sm:12px;
+      --lh:1.7;  /* line-height cómoda */
+      --space-1:6px; --space-2:10px; --space-3:14px; --space-4:18px; --space-5:24px; --space-6:32px;
+      --maxw:1200px; /* ancho de lectura */
+    }
+    body.dark{
+      --bg:#0f141a; --text:#e5e7eb; --muted:#9aa4af; --card:#121923; --line:#1f2937;
+      --shadow:0 8px 28px rgba(0,0,0,.5);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Apple Color Emoji, Segoe UI Emoji; background:var(--bg); color:var(--text); line-height:var(--lh);}
+    :focus-visible{outline:3px solid color-mix(in oklab, var(--accent) 70%, transparent); outline-offset:2px; border-radius:10px}
+
+    /* Layout principal */
+    .app{display:grid; grid-template-columns:280px 1fr; grid-template-rows:64px 1fr; height:100vh;}
+    header{grid-column:1/3; display:flex; align-items:center; justify-content:space-between; padding:0 var(--space-4); border-bottom:1px solid var(--line); background:var(--card); position:sticky; top:0; z-index:10}
+    .brand{display:flex; gap:var(--space-3); align-items:center}
+    .logo{width:36px;height:36px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#7c3aed); box-shadow:var(--shadow)}
+    .title{font-weight:800; letter-spacing:.2px}
+    .subtitle{color:var(--muted); font-size:13px}
+    .toolbar{display:flex; gap:var(--space-2)}
+    .btn{border:1px solid var(--line); background:var(--card); color:var(--text); padding:10px 12px; border-radius:12px; cursor:pointer; box-shadow:var(--shadow); font-weight:600}
+    .btn:hover{border-color:var(--accent)}
+    .btn.primary{background:var(--accent); border-color:var(--accent); color:white}
+
+    aside{border-right:1px solid var(--line); background:var(--card); padding:var(--space-3); overflow:auto}
+    .search{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:transparent; color:var(--text)}
+    .nav{margin-top:var(--space-3); font-size:14px}
+    .nav .item{display:block; padding:8px 10px; border-radius:12px; color:var(--text); text-decoration:none}
+    .nav .item:hover{background:var(--line)}
+    .tree{margin-top:var(--space-2)}
+    .tree details{margin:8px 0;}
+    .tree summary{cursor:pointer; padding:6px 8px; border-radius:10px;}
+    .tree summary:hover{background:var(--line)}
+    .tree .leaf{padding:6px 8px 6px 28px; color:var(--muted)}
+
+    main{padding:var(--space-4); overflow:auto}
+    .container{max-width:var(--maxw); margin:0 auto}
+
+    .block{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:var(--space-5); box-shadow:var(--shadow); margin-bottom:var(--space-5)}
+    .h{font-weight:900; font-size:22px; margin-bottom:6px}
+
+    /* Toggle (secciones Notion) */
+    .toggle{border:1px dashed var(--line); border-radius:14px; padding:0; overflow:hidden; margin:18px 0; background:transparent}
+    .toggle > summary{list-style:none; padding:14px 18px; cursor:pointer; background:var(--card); position:relative; font-weight:800}
+    .toggle > summary::marker{content:""}
+    .toggle > summary::after{content:"▾"; position:absolute; right:16px; color:var(--muted)}
+    .toggle[open] > summary::after{content:"▴"}
+    .toggle .content{padding:18px; border-top:1px dashed var(--line)}
+
+    /* Prosa/legibilidad */
+    .prose p{margin:0 0 10px}
+    .prose ul{margin:0 0 10px 18px}
+    .callout{display:flex; gap:10px; background:color-mix(in oklab, var(--accent) 8%, transparent); border:1px solid var(--line); padding:12px 14px; border-radius:12px}
+
+    /* Stepper de desarrollo */
+    .steps{display:grid; grid-template-columns:1fr; gap:14px}
+    .step{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px}
+    .step .head{display:flex; gap:12px; align-items:flex-start}
+    .badge{width:28px; height:28px; border-radius:20px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:800; box-shadow:var(--shadow)}
+    .step h4{margin:0}
+
+    /* Dos columnas en desktop */
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+
+    /* Tabla de Test Cases (más aire) */
+    .table-toolbar{display:flex; gap:10px; align-items:center; margin-bottom:8px; flex-wrap:wrap}
+    .input, select, textarea{padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:transparent; color:var(--text)}
+    .table{width:100%; border-collapse:separate; border-spacing:0 12px}
+    .table th{font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); text-align:left; padding:0 10px}
+    .table td{background:var(--card); border:1px solid var(--line); padding:12px 10px; border-left:none; border-right:none}
+    .table tr{box-shadow:var(--shadow)}
+    .table tr td:first-child{border-radius:12px 0 0 12px; border-left:1px solid var(--line)}
+    .table tr td:last-child{border-radius:0 12px 12px 0; border-right:1px solid var(--line)}
+
+    /* Kanban con scroll horizontal */
+    .kanban-wrap{overflow:auto; padding-bottom:6px}
+    .kanban{display:flex; gap:12px; align-items:flex-start; width:max-content}
+    .col{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px; box-shadow:var(--shadow); min-width:280px; max-width:320px; min-height:260px}
+    .col-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+    .col-title{font-weight:800}
+    .cards{display:flex; flex-direction:column; gap:10px; min-height:160px}
+    .card{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px; cursor:grab}
+    .card.dragging{opacity:.6}
+    .labels{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+    .label{font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid var(--line)}
+    .l-prio-Alta{background:rgba(239,68,68,.18)}
+    .l-prio-Media{background:rgba(245,158,11,.18)}
+    .l-prio-Baja{background:rgba(16,185,129,.18)}
+
+    /* Modal */
+    .modal{position:fixed; inset:0; display:none; place-content:center; background:rgba(0,0,0,.35)}
+    .modal.open{display:grid}
+    .dialog{background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:16px; padding:16px; width:min(540px,92vw); box-shadow:var(--shadow)}
+    .dialog h3{margin:0 0 10px}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .row + .row{margin-top:10px}
+
+    /* Responsive */
+    @media (max-width:1100px){
+      .app{grid-template-columns:0 1fr}
+      aside{display:none}
+      .kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}
+      .grid-2{grid-template-columns:1fr}
+    }
+    @media (max-width:720px){
+      .kanban{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="title">Organizador Gráfico – Testing & QA</div>
+          <div class="subtitle">Pseudo‑Notion + Trello · lectura cómoda · accesible</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="toggleTheme" title="Tema claro/oscuro">🌓 Tema</button>
+        <button class="btn" id="densityBtn" title="Alternar densidad">↕️ Densidad</button>
+        <button class="btn" id="exportBtn" title="Exportar JSON">⬇️ Exportar</button>
+        <label class="btn" for="importFile" title="Importar JSON">⬆️ Importar</label>
+        <input id="importFile" type="file" accept="application/json" hidden>
+        <button class="btn" id="resetBtn" title="Restablecer todo">♻️ Reset</button>
+      </div>
+    </header>
+
+    <aside>
+      <input class="search" id="searchNav" placeholder="Buscar…" />
+      <nav class="nav">
+        <div class="item" onclick="scrollToId('d1')">🧪 Dinámica 1</div>
+        <div class="item" onclick="scrollToId('d2')">📋 Dinámica 2</div>
+      </nav>
+      <div class="tree">
+        <details open>
+          <summary>📋 ORGANIZADOR GRÁFICO – Testing & QA</summary>
+          <details open>
+            <summary>🧪 DINÁMICA 1: Elaboración de Test Cases</summary>
+            <div class="leaf">📚 Desarrollo (5 puntos detallados)</div>
+            <div class="leaf">📊 Repositorio de Test Cases</div>
+            <div class="leaf">🛠️ Herramientas (TestLink vs Squash)</div>
+          </details>
+          <details open>
+            <summary>📋 DINÁMICA 2: Test Plan ISO 9001:2015</summary>
+            <div class="leaf">📚 Desarrollo</div>
+            <div class="leaf">📅 Cronograma Kanban (estilo Trello)</div>
+          </details>
+        </details>
+      </div>
+    </aside>
+
+    <main>
+      <div class="container">
+      <!-- DINÁMICA 1 -->
+      <section id="d1" class="block">
+        <div class="h">🧪 DINÁMICA 1 — Elaboración de Test Cases</div>
+        <p class="subtitle">Cumple con los <b>5 puntos de desarrollo</b> solicitados, con ejemplos claros y visuales.</p>
+
+        <details class="toggle" open>
+          <summary>📚 Desarrollo — 5 apartados (UX mejorado)</summary>
+          <div class="content">
+            <div class="steps">
+              <!-- 1. Repaso teórico -->
+              <article class="step">
+                <div class="head"><div class="badge">1</div><h4>Repaso teórico – ¿Qué es un Test Case?</h4></div>
+                <div class="prose">
+                  <div class="callout">📌 Un <b>Test Case</b> es un conjunto de <i>precondiciones</i>, <i>entradas</i>, <i>pasos</i>, <i>resultado esperado</i> y <i>criterios de aceptación</i> para validar un requisito.</div>
+                  <ul>
+                    <li><b>ID:</b> TC‑RF‑01</li>
+                    <li><b>Precondiciones:</b> estado del sistema necesario (p. ej., “usuario no registrado”).</li>
+                    <li><b>Entradas/Datos:</b> valores de prueba (válidos/ inválidos, límites).</li>
+                    <li><b>Pasos:</b> instrucciones reproducibles (1…n).</li>
+                    <li><b>Resultado esperado:</b> salida observable y verificable.</li>
+                    <li><b>Criterios de aceptación:</b> métrica/umbral para aprobar (p. ej., “P95 &lt; 1.2 s”).</li>
+                  </ul>
+                </div>
+              </article>
+
+              <!-- 2. Buen vs Mal -->
+              <article class="step">
+                <div class="head"><div class="badge">2</div><h4>Ejemplo — Buen vs Mal Caso de Prueba</h4></div>
+                <div class="grid-2">
+                  <div class="step">
+                    <h4>✅ Buen caso</h4>
+                    <p><b>Objetivo:</b> Consultar calidad del aire con <code>apiKey</code> válida.</p>
+                    <ul>
+                      <li><b>Precondición:</b> <code>apiKey</code> válida registrada.</li>
+                      <li><b>Datos:</b> ciudad=SCZ, fecha=hoy.</li>
+                      <li><b>Pasos:</b> GET <code>/air?city=SCZ</code>.</li>
+                      <li><b>Esperado:</b> HTTP 200 en &lt; 3 s con payload ICA.</li>
+                      <li><b>Criterio:</b> t_resp P95 &lt; 3000 ms; esquema JSON válido.</li>
+                    </ul>
+                  </div>
+                  <div class="step">
+                    <h4>❌ Mal caso</h4>
+                    <p>“Probar API rápido”. Sin datos, sin pasos, sin métrica ⇒ <b>no es verificable</b>.</p>
+                  </div>
+                </div>
+              </article>
+
+              <!-- 3. Módulo asignado -->
+              <article class="step">
+                <div class="head"><div class="badge">3</div><h4>Módulo asignado — Plataforma Ambiental</h4></div>
+                <div class="prose grid-2">
+                  <div>
+                    <ul>
+                      <li><b>Ámbitos:</b> Ingesta APIs, ETL, Modelos ML, Automatizaciones n8n, Dashboards, App.</li>
+                      <li><b>Actores:</b> Industria, Gobierno, Ciudadanía.</li>
+                      <li><b>Resultados:</b> alertas, reportes PDF, tendencias ICA.</li>
+                    </ul>
+                  </div>
+                  <div class="callout">🎯 <b>Objetivo del módulo:</b> transformar datos urbano‑industriales en <b>predicciones</b> y <b>acciones</b> (alertas/reportes).</div>
+                </div>
+              </article>
+
+              <!-- 4. Identificación RF/RNF -->
+              <article class="step">
+                <div class="head"><div class="badge">4</div><h4>Identificación de requisitos — 5 RF y 3 RNF</h4></div>
+                <div class="prose">
+                  <ul>
+                    <li><b>RF1:</b> Registrar usuario (industria/autoridad/ciudadano)</li>
+                    <li><b>RF2:</b> Consultar calidad del aire por API</li>
+                    <li><b>RF3:</b> Predicción de contaminación (series temporales)</li>
+                    <li><b>RF4:</b> Generación de reporte PDF semanal</li>
+                    <li><b>RF5:</b> Clasificación de quejas ciudadanas (reglas)</li>
+                    <li><b>RNF1:</b> Rendimiento API (P95 por carga)</li>
+                    <li><b>RNF2:</b> Compatibilidad web (Chrome/Firefox/Edge/Safari)</li>
+                    <li><b>RNF3:</b> Seguridad login (prevención de SQLi)</li>
+                  </ul>
+                  <p class="subtitle">Estos requisitos ya están ligados a los casos del repositorio (más abajo).</p>
+                </div>
+              </article>
+
+              <!-- 5. Técnicas aplicadas -->
+              <article class="step">
+                <div class="head"><div class="badge">5</div><h4>Técnicas de diseño aplicadas (2+)</h4></div>
+                <div class="grid-2">
+                  <div class="step">
+                    <h4>Partición de Equivalencias</h4>
+                    <ul>
+                      <li><b>Idea:</b> agrupar entradas en clases que se comportan igual.</li>
+                      <li><b>Uso aquí:</b> API con <i>clave válida</i> vs <i>inválida</i>; navegadores soporte vs no.</li>
+                      <li><b>Beneficio:</b> menos pruebas, misma cobertura.</li>
+                    </ul>
+                  </div>
+                  <div class="step">
+                    <h4>Valores Límite</h4>
+                    <ul>
+                      <li><b>Idea:</b> probar en los bordes donde suelen fallar los sistemas.</li>
+                      <li><b>Uso aquí:</b> umbrales de ICA (0, 35, 36, 150, 151) y carga 50/100/200 rqm.</li>
+                      <li><b>Beneficio:</b> detecta off‑by‑one, saturaciones y cortes.</li>
+                    </ul>
+                  </div>
+                  <div class="step">
+                    <h4>Tablas de Decisión</h4>
+                    <ul>
+                      <li><b>Idea:</b> reglas <i>condición → acción</i> para enrutar quejas y alertas.</li>
+                      <li><b>Uso aquí:</b> (tipo×gravedad) → responsable; (umbral×zona) → notificación.</li>
+                      <li><b>Beneficio:</b> cobertura combinatoria sin olvidar casos.</li>
+                    </ul>
+                  </div>
+                  <div class="step">
+                    <h4>Métricas de aceptación</h4>
+                    <ul>
+                      <li><b>Funcional:</b> 100% de válidos aceptados / inválidos rechazados.</li>
+                      <li><b>Rendimiento:</b> P95 respuesta &lt; 0.8/1.2/2.0 s (50/100/200 rqm).</li>
+                      <li><b>Usabilidad:</b> SUS ≥ 80/100 en dashboards.</li>
+                      <li><b>Seguridad:</b> 100% bloqueo de SQLi/inputs maliciosos.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </details>
+
+        <details class="toggle" open>
+          <summary>📊 Repositorio de Test Cases (10 ítems editables)</summary>
+          <div class="content">
+            <div class="table-toolbar">
+              <input id="tcSearch" class="input" placeholder="Filtrar por texto…"/>
+              <button class="btn" id="addRow">➕ Nueva fila</button>
+              <span class="subtitle" id="tcCount"></span>
+            </div>
+            <div style="overflow:auto">
+              <table class="table" id="tcTable" aria-label="Repositorio de Test Cases">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Requisito</th>
+                    <th>Técnica</th>
+                    <th>Precondiciones</th>
+                    <th>Datos</th>
+                    <th>Pasos</th>
+                    <th>Resultado Esperado</th>
+                    <th>Métrica</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <details class="toggle" open>
+          <summary>🛠️ Herramientas (TestLink vs Squash)</summary>
+          <div class="content prose">
+            <ul>
+              <li><b>Squash TM</b>: trazabilidad RF→TC→Ejecuciones, etiquetas, REST API, CI fácil.</li>
+              <li><b>TestLink</b>: clásico; requiere plugins para integraciones modernas.</li>
+              <li><b>Sugerencia:</b> usar Squash; este organizador exporta/importa JSON para migración.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <!-- DINÁMICA 2 -->
+      <section id="d2" class="block">
+        <div class="h">📋 DINÁMICA 2 — Test Plan ISO 9001:2015</div>
+        <p class="subtitle">Plan editable + cronograma visual tipo Trello.</p>
+
+        <details class="toggle" open>
+          <summary>📚 Desarrollo</summary>
+          <div class="content prose">
+            <h4>Objetivo de pruebas</h4>
+            <ul>
+              <li>Garantizar la provisión consistente de productos y servicios.</li>
+              <li>Aumentar la satisfacción del cliente mediante un <b>SGC</b> con <b>enfoque a procesos</b>, <b>ciclo PHVA</b> y <b>pensamiento basado en riesgos</b>.</li>
+              <li>Validar que la ingesta de datos, modelos predictivos, automatizaciones n8n, APIs y dashboards cumplen <b>requisitos funcionales y no funcionales</b>.</li>
+              <li>Generar <b>evidencias documentadas</b> y promover la <b>mejora continua</b>.</li>
+            </ul>
+
+            <h4>Alcance</h4>
+            <ul>
+              <li><b>Incluye:</b> Ingesta de datos (APIs públicas y reportes), ETL → PostgreSQL/MongoDB, modelos predictivos (entrenamiento y serving), automatizaciones n8n (alertas/reportes), APIs de consulta/predicción, dashboards (Metabase/Power BI) y app ciudadana, generación de PDF y gestión de quejas.</li>
+              <li>Interacciones con <b>proveedores externos</b> de datos.</li>
+              <li><b>Excluye:</b> hardware IoT propietario y etiquetado manual de datos.</li>
+            </ul>
+
+            <h4>Estrategia y niveles (PDCA)</h4>
+            <ul>
+              <li><b>Planificar (Cl. 6.1, 6.2):</b> objetivos de calidad medibles, riesgos y oportunidades, criterios de aceptación, recursos y calendario.</li>
+              <li><b>Hacer (Cl. 8.1, 8.3, 8.5.6):</b> pruebas unitarias, integración, sistema y aceptación; tipos funcional, rendimiento, seguridad y usabilidad; control de diseño y cambios; operación controlada.</li>
+              <li><b>Verificar (Cl. 9.1, 9.1.2):</b> seguimiento y medición de métricas; validación de criterios; satisfacción del cliente; análisis de datos.</li>
+              <li><b>Actuar (Cl. 10.2, 9.3):</b> acciones correctivas; actualización de riesgos; revisión por la dirección.</li>
+              <li><b>Proveedores externos (Cl. 8.4) e información documentada (Cl. 7.5):</b> evaluación/ control y trazabilidad con control de versiones.</li>
+            </ul>
+
+            <h4>Recursos (humanos/técnicos)</h4>
+            <ul>
+              <li><b>Personas:</b> QA Lead, Backend, Frontend, Data/ML, DevOps (competencia demostrable; Cl. 7.2).</li>
+              <li><b>Infraestructura:</b> repositorios Git con control de versiones, CI/CD (GitHub Actions), ambientes DEV/QA/PROD, Postman, JMeter, Cypress, Sonar; orquestación de jobs; almacenamiento de evidencias.</li>
+              <li><b>Comunicación:</b> qué/cuándo/a quién/cómo (Cl. 7.4). <b>Seguimiento/medición:</b> recursos adecuados y mantenidos (Cl. 7.1, 7.1.5).</li>
+            </ul>
+
+            <h4>Criterios de entrada/salida</h4>
+            <ul>
+              <li><b>Entrada:</b> alcance y requisitos priorizados; objetivos de calidad; datos de prueba; ambientes listos; responsables y comunicación definidos; control de versiones (Cl. 7.5).</li>
+              <li><b>Salida (aceptación):</b> conformidad con criterios por módulo/actor; P95 bajo umbrales; 0 vulnerabilidades críticas; SUS ≥ 80; evidencias y trazabilidad completas; registro de no conformidades y acciones correctivas (Cl. 8.7, 10.2); reporte para revisión por la dirección (Cl. 9.3).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="toggle" open>
+          <summary>📅 Cronograma Kanban (estilo Trello)</summary>
+          <div class="content">
+            <div class="kanban-wrap"><div class="kanban" id="board"></div></div>
+          </div>
+        </details>
+      </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal de tarjeta -->
+  <div class="modal" id="cardModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h3>✏️ Editar tarjeta</h3>
+      <div style="margin-bottom:10px">
+        <label>Título</label>
+        <input id="mTitle" class="input" style="width:100%" />
+      </div>
+      <div class="row">
+        <div>
+          <label>Prioridad</label>
+          <select id="mPrio" class="input">
+            <option>Alta</option>
+            <option>Media</option>
+            <option>Baja</option>
+          </select>
+        </div>
+        <div>
+          <label>Tipo</label>
+          <select id="mTipo" class="input">
+            <option>Funcional</option>
+            <option>Rendimiento</option>
+            <option>Seguridad</option>
+            <option>Usabilidad</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div>
+          <label>Actor</label>
+          <select id="mActor" class="input">
+            <option>Industria</option>
+            <option>Gobierno</option>
+            <option>Ciudadanía</option>
+          </select>
+        </div>
+        <div>
+          <label>Sprint</label>
+          <select id="mSprint" class="input">
+            <option>Sprint 1</option>
+            <option>Sprint 2</option>
+            <option>Sprint 3</option>
+            <option>Sprint 4</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px">
+        <button class="btn" id="mCancel">Cancelar</button>
+        <button class="btn primary" id="mSave">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ---------- Helpers ----------
+  const $ = s=>document.querySelector(s); const $$ = s=>Array.from(document.querySelectorAll(s));
+  const LS = { save:(k,v)=>localStorage.setItem(k,JSON.stringify(v)), load:(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}} };
+  const fmtId = i => i.toString().padStart(2,'0');
+
+  // Theme + Density
+  const themeBtn = $('#toggleTheme'); const densityBtn = $('#densityBtn');
+  const savedTheme = LS.load('qa_theme','light'); if(savedTheme==='dark') document.body.classList.add('dark');
+  themeBtn.onclick = ()=>{ document.body.classList.toggle('dark'); LS.save('qa_theme', document.body.classList.contains('dark')?'dark':'light'); };
+  const savedDense = LS.load('qa_density','comfortable'); if(savedDense==='compact'){ document.documentElement.style.setProperty('--lh','1.5'); }
+  densityBtn.onclick = ()=>{ const cur = getComputedStyle(document.documentElement).getPropertyValue('--lh').trim(); const next = cur==='1.5'?'1.7':'1.5'; document.documentElement.style.setProperty('--lh', next); LS.save('qa_density', next==='1.5'?'compact':'comfortable'); };
+
+  // ---------- Test Cases Table ----------
+  const tcDefault=[
+    {id:'TC-RF-01', tipo:'RF', req:'Registrar usuario', tecnica:'Equivalencias', pre:'Formulario limpio', datos:'roles válidos/contraseñas', pasos:'Completar y enviar', esperado:'Alta ó mensajes de error', metrica:'100% válidos/100% rechazo inválidos', estado:'Pendiente'},
+    {id:'TC-RF-02', tipo:'RF', req:'Consulta calidad del aire (API)', tecnica:'Equivalencias', pre:'apiKey válida/ inválida', datos:'ciudad, rango', pasos:'GET /air', esperado:'200<3s ó 401', metrica:'t_resp <3s', estado:'Pendiente'},
+    {id:'TC-RF-03', tipo:'RF', req:'Predicción contaminación', tecnica:'Valores Límite', pre:'dataset listo', datos:'0,35,36,150,151', pasos:'Invocar modelo', esperado:'clase correcta', metrica:'AUC ≥ 0.80', estado:'Pendiente'},
+    {id:'TC-RF-04', tipo:'RF', req:'Reporte PDF semanal', tecnica:'Valores Límite', pre:'cron configurado', datos:'semana T', pasos:'Esperar job', esperado:'PDF lunes ≤08:00', metrica:'100% entregas', estado:'Pendiente'},
+    {id:'TC-RF-05', tipo:'RF', req:'Clasificación de quejas', tecnica:'Tablas de Decisión', pre:'reglas definidas', datos:'tipo×gravedad', pasos:'Enviar queja', esperado:'ruta correcta', metrica:'100% reglas', estado:'Pendiente'},
+    {id:'TC-RNF-01', tipo:'RNF', req:'Rendimiento API predicción', tecnica:'Valores Límite', pre:'JMeter listo', datos:'50/100/200 rqm', pasos:'Ejecutar test', esperado:'P95 ≤ 0.8/1.2/2s', metrica:'P95', estado:'Pendiente'},
+    {id:'TC-RNF-02', tipo:'RNF', req:'Compatibilidad web', tecnica:'Equivalencias', pre:'navegadores', datos:'Chrome/Firefox/Edge/Safari', pasos:'Recorrer flujos', esperado:'UI OK', metrica:'≥95% casos', estado:'Pendiente'},
+    {id:'TC-RNF-03', tipo:'RNF', req:'Seguridad login', tecnica:'Tablas de Decisión', pre:'WAF/validaciones', datos:'normal vs SQLi', pasos:'Intentar login', esperado:'Bloqueo ataque', metrica:'100% bloqueo', estado:'Pendiente'},
+    {id:'TC-RF-06', tipo:'RF', req:'Aut. n8n alertas', tecnica:'Tablas de Decisión', pre:'umbrales', datos:'eventos críticos', pasos:'Simular evento', esperado:'notificación', metrica:'MTTA ≤2m', estado:'Pendiente'},
+    {id:'TC-RF-07', tipo:'RF', req:'Dashboard ciudadanía', tecnica:'Equivalencias', pre:'dataset', datos:'ciudad/Zona', pasos:'Abrir vista', esperado:'ICA visible', metrica:'SUS ≥80', estado:'Pendiente'}
+  ];
+  const tcKey='qa_tc_rows'; let tcRows=LS.load(tcKey,tcDefault);
+  const tcBody=$('#tcTable tbody'); const tcCount=$('#tcCount');
+  function renderTable(filter=''){
+    tcBody.innerHTML='';
+    const rows=tcRows.filter(r=>Object.values(r).join(' ').toLowerCase().includes(filter.toLowerCase()));
+    rows.forEach(r=>{
+      const tr=document.createElement('tr');
+      ['id','tipo','req','tecnica','pre','datos','pasos','esperado','metrica','estado'].forEach(k=>{
+        const td=document.createElement('td'); td.contentEditable=true; td.dataset.key=k; td.textContent=r[k]??'';
+        td.oninput=()=>{ r[k]=td.textContent; LS.save(tcKey,tcRows); };
+        tr.appendChild(td);
+      });
+      tcBody.appendChild(tr);
+    });
+    tcCount.textContent=`${rows.length} filas`;
+  }
+  renderTable();
+  $('#tcSearch').addEventListener('input',e=>renderTable(e.target.value));
+  $('#addRow').onclick=()=>{ const next={id:`TC-NEW-${fmtId(tcRows.length+1)}`, tipo:'RF', req:'', tecnica:'Equivalencias', pre:'', datos:'', pasos:'', esperado:'', metrica:'', estado:'Pendiente'}; tcRows.unshift(next); LS.save(tcKey,tcRows); renderTable($('#tcSearch').value||''); };
+
+  // ---------- Test Plan (bullets; sin campos editables) ----------
+  // Esta sección no requiere JS. Se mantiene el bloque para compatibilidad.
+
+  // ---------- Kanban ----------
+  const board=$('#board'); const kbKey='qa_kanban_v1';
+  const initialBoard={
+    cols:[{id:'backlog',name:'Backlog'},{id:'plan',name:'Planificación'},{id:'doing',name:'En curso'},{id:'review',name:'Revisión/QA'},{id:'done',name:'Hecho'},{id:'blocked',name:'Bloqueado'}],
+    cards:[
+      {id:'c1',col:'backlog',title:'Ingesta APIs (OpenAQ/Clima/Tránsito)',prio:'Alta',tipo:'Funcional',actor:'Gobierno',sprint:'Sprint 1'},
+      {id:'c2',col:'backlog',title:'ETL → PostgreSQL/Mongo – Integración',prio:'Media',tipo:'Funcional',actor:'Industria',sprint:'Sprint 1'},
+      {id:'c3',col:'plan',title:'Modelo predictivo – métricas AUC≥0.80',prio:'Alta',tipo:'Rendimiento',actor:'Gobierno',sprint:'Sprint 2'},
+      {id:'c4',col:'plan',title:'Automatizaciones n8n (alertas/MTTA≤2m)',prio:'Alta',tipo:'Funcional',actor:'Gobierno',sprint:'Sprint 2'},
+      {id:'c5',col:'doing',title:'Dashboards (Metabase/Power BI) – SUS≥80',prio:'Media',tipo:'Usabilidad',actor:'Ciudadanía',sprint:'Sprint 2'},
+      {id:'c6',col:'review',title:'Seguridad login – bloquear SQLi',prio:'Alta',tipo:'Seguridad',actor:'Industria',sprint:'Sprint 3'},
+      {id:'c7',col:'done',title:'Reporte PDF semanal – entrega Lunes 08:00',prio:'Baja',tipo:'Funcional',actor:'Gobierno',sprint:'Sprint 1'}
+    ]};
+  let kb=LS.load(kbKey,initialBoard);
+
+  function labelSpan(text,cls){ const s=document.createElement('span'); s.className=`label ${cls}`; s.textContent=text; return s; }
+  function renderCard(c){ const el=document.createElement('div'); el.className='card'; el.draggable=true; el.dataset.id=c.id; el.innerHTML=`<div class="t">${c.title}</div><div class="labels">${labelSpan('Prio: '+c.prio,'l-prio-'+c.prio).outerHTML}${labelSpan('Tipo: '+c.tipo,'').outerHTML}${labelSpan('Actor: '+c.actor,'').outerHTML}${labelSpan(c.sprint,'').outerHTML}</div>`; el.addEventListener('dragstart',e=>{el.classList.add('dragging'); e.dataTransfer.setData('text/plain',c.id)}); el.addEventListener('dragend',()=>el.classList.remove('dragging')); el.addEventListener('click',()=>openModal(c.id)); return el; }
+  function renderBoard(){ board.innerHTML=''; kb.cols.forEach(col=>{ const wrap=document.createElement('div'); wrap.className='col'; wrap.dataset.col=col.id; wrap.innerHTML=`<div class="col-header"><div class="col-title">${col.name}</div><button class="btn" data-add="${col.id}" title="Añadir tarjeta">＋</button></div><div class="cards" data-drop="${col.id}"></div>`; const list=wrap.querySelector('.cards'); kb.cards.filter(c=>c.col===col.id).forEach(c=>list.appendChild(renderCard(c))); board.appendChild(wrap); }); }
+  function setupDnD(){ board.addEventListener('dragover',e=>{ const dropCol=e.target.closest('[data-drop]'); if(!dropCol) return; e.preventDefault(); }); board.addEventListener('drop',e=>{ const dropCol=e.target.closest('[data-drop]'); if(!dropCol) return; e.preventDefault(); const id=e.dataTransfer.getData('text/plain'); const card=kb.cards.find(x=>x.id===id); if(!card) return; card.col=dropCol.dataset.drop; LS.save(kbKey,kb); renderBoard(); attachHandlers(); }); }
+  function attachHandlers(){ $$('[data-add]').forEach(btn=> btn.onclick=()=>addCard(btn.dataset.add)); }
+  function addCard(colId){ const nid='c'+(Date.now()); const card={id:nid,col:colId,title:'Nueva tarea',prio:'Media',tipo:'Funcional',actor:'Industria',sprint:'Sprint 1'}; kb.cards.unshift(card); LS.save(kbKey,kb); renderBoard(); attachHandlers(); openModal(nid); }
+
+  // Modal
+  const modal=$('#cardModal'); const mTitle=$('#mTitle'); const mPrio=$('#mPrio'); const mTipo=$('#mTipo'); const mActor=$('#mActor'); const mSprint=$('#mSprint'); let modalId=null;
+  function openModal(id){ modalId=id; const c=kb.cards.find(x=>x.id===id); if(!c) return; mTitle.value=c.title; mPrio.value=c.prio; mTipo.value=c.tipo; mActor.value=c.actor; mSprint.value=c.sprint; modal.classList.add('open'); }
+  $('#mCancel').onclick=()=> modal.classList.remove('open');
+  $('#mSave').onclick=()=>{ const c=kb.cards.find(x=>x.id===modalId); if(!c) return; c.title=mTitle.value; c.prio=mPrio.value; c.tipo=mTipo.value; c.actor=mActor.value; c.sprint=mSprint.value; LS.save(kbKey,kb); modal.classList.remove('open'); renderBoard(); attachHandlers(); };
+  modal.addEventListener('click',e=>{ if(e.target===modal) modal.classList.remove('open'); });
+
+  renderBoard(); setupDnD(); attachHandlers();
+
+  // Export / Import / Reset
+  $('#exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify({tc:tcRows, plan:LS.load('qa_test_plan',{}), kb}, null, 2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='organizador_testing.json'; a.click(); URL.revokeObjectURL(a.href); };
+  $('#importFile').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const txt=await f.text(); try{ const data=JSON.parse(txt); if(data.tc){ tcRows=data.tc; LS.save(tcKey,tcRows); renderTable($('#tcSearch').value||''); } if(data.plan){ LS.save('qa_test_plan',data.plan); location.reload(); } if(data.kb){ kb=data.kb; LS.save(kbKey,kb); renderBoard(); attachHandlers(); } }catch{ alert('JSON inválido'); } };
+  $('#resetBtn').onclick=()=>{ if(confirm('¿Restablecer todo el contenido?')){ localStorage.removeItem('qa_tc_rows'); localStorage.removeItem('qa_test_plan'); localStorage.removeItem('qa_kanban_v1'); location.reload(); } };
+
+  // Header quick scroll
+  window.scrollToId = id => document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+  </script>
+</body>
+</html>
