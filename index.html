@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Organizador Gráfico – Testing & QA (Pseudo‑Notion + Trello)</title>
+  <title>Organizador Gráfico – Testing & QA (Pseudo-Notion + Trello)</title>
   <style>
-    
+    /* =====================================================
+       DESIGN SYSTEM (mejor UX/UI + legibilidad Notion-like)
+       ===================================================== */
     :root{
       --bg:#fbfbfd; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb;
       --accent:#2563eb; --accent-2:#10b981; --accent-3:#f59e0b; --accent-4:#ef4444;
@@ -63,7 +65,7 @@
     /* Prosa/legibilidad */
     .prose p{margin:0 0 10px}
     .prose ul{margin:0 0 10px 18px}
-    .callout{display:flex; gap:10px; background:color-mix(in oklab, var(--accent) 8%, transparent); border:1px solid var(--line); padding:12px 14px; border-radius:12px}
+    .callout{gap:10px; background:color-mix(in oklab, var(--accent) 8%, transparent); border:1px solid var(--line); padding:12px 14px; border-radius:12px}
 
     /* Stepper de desarrollo */
     .steps{display:grid; grid-template-columns:1fr; gap:14px}
@@ -112,11 +114,7 @@
     @media (max-width:1100px){
       .app{grid-template-columns:0 1fr}
       aside{display:none}
-      .kanban{grid-template-columns:repeat(2,minmax(240px,1fr))}
       .grid-2{grid-template-columns:1fr}
-    }
-    @media (max-width:720px){
-      .kanban{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -127,13 +125,13 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <div class="title">Organizador Gráfico – Testing & QA</div>
-          <div class="subtitle">Pseudo‑Notion + Trello · lectura cómoda · accesible</div>
+          <div class="subtitle">Pseudo-Notion + Trello · lectura cómoda · accesible</div>
         </div>
       </div>
       <div class="toolbar">
         <button class="btn" id="toggleTheme" title="Tema claro/oscuro">🌓 Tema</button>
         <button class="btn" id="densityBtn" title="Alternar densidad">↕️ Densidad</button>
-        <button class="btn" id="exportBtn" title="Exportar JSON">⬇️ Exportar</button>
+        <button class="btn" id="exportBtn" title="Exportar JSON">⬇️ Exportar JSON</button>
         <label class="btn" for="importFile" title="Importar JSON">⬆️ Importar</label>
         <input id="importFile" type="file" accept="application/json" hidden>
         <button class="btn" id="resetBtn" title="Restablecer todo">♻️ Reset</button>
@@ -181,7 +179,7 @@
                 <div class="prose">
                   <div class="callout">📌 Un <b>Test Case</b> es un conjunto de <i>precondiciones</i>, <i>entradas</i>, <i>pasos</i>, <i>resultado esperado</i> y <i>criterios de aceptación</i> para validar un requisito.</div>
                   <ul>
-                    <li><b>ID:</b> TC‑RF‑01</li>
+                    <li><b>ID:</b> TC-RF-01</li>
                     <li><b>Precondiciones:</b> estado del sistema necesario (p. ej., “usuario no registrado”).</li>
                     <li><b>Entradas/Datos:</b> valores de prueba (válidos/ inválidos, límites).</li>
                     <li><b>Pasos:</b> instrucciones reproducibles (1…n).</li>
@@ -224,7 +222,7 @@
                       <li><b>Resultados:</b> alertas, reportes PDF, tendencias ICA.</li>
                     </ul>
                   </div>
-                  <div class="callout">🎯 <b>Objetivo del módulo:</b> transformar datos urbano‑industriales en <b>predicciones</b> y <b>acciones</b> (alertas/reportes).</div>
+                  <div class="callout">🎯 <b>Objetivo del módulo:</b> transformar datos urbano-industriales en <b>predicciones</b> y <b>acciones</b> (alertas/reportes).</div>
                 </div>
               </article>
 
@@ -263,7 +261,7 @@
                     <ul>
                       <li><b>Idea:</b> probar en los bordes donde suelen fallar los sistemas.</li>
                       <li><b>Uso aquí:</b> umbrales de ICA (0, 35, 36, 150, 151) y carga 50/100/200 rqm.</li>
-                      <li><b>Beneficio:</b> detecta off‑by‑one, saturaciones y cortes.</li>
+                      <li><b>Beneficio:</b> detecta off-by-one, saturaciones y cortes.</li>
                     </ul>
                   </div>
                   <div class="step">
@@ -295,6 +293,8 @@
             <div class="table-toolbar">
               <input id="tcSearch" class="input" placeholder="Filtrar por texto…"/>
               <button class="btn" id="addRow">➕ Nueva fila</button>
+              <button class="btn" id="exportExcelBtn">🧾 Exportar Excel (.xlsx)</button>
+              <button class="btn" id="exportCsvBtn">📄 Exportar CSV</button>
               <span class="subtitle" id="tcCount"></span>
             </div>
             <div style="overflow:auto">
@@ -320,6 +320,21 @@
         </details>
 
         <details class="toggle" open>
+          <summary>🎤 Caso de prueba destacado</summary>
+          <div class="content prose">
+            <ul>
+              <li><b>ID:</b> TC-RF-02 – Consulta calidad del aire</li>
+              <li><b>Técnica:</b> Partición de equivalencias</li>
+              <li><b>Precondiciones:</b> apiKey válida/ inválida</li>
+              <li><b>Entradas:</b> ciudad, rango de fechas</li>
+              <li><b>Pasos:</b> GET /air?city=SCZ</li>
+              <li><b>Esperado:</b> 200 &lt; 3s con payload válido; 401 con clave inválida</li>
+              <li><b>Criterio de aceptación:</b> P95 &lt; 3000 ms; esquema JSON válido</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="toggle" open>
           <summary>🛠️ Herramientas (TestLink vs Squash)</summary>
           <div class="content prose">
             <ul>
@@ -334,7 +349,7 @@
       <!-- DINÁMICA 2 -->
       <section id="d2" class="block">
         <div class="h">📋 DINÁMICA 2 — Test Plan ISO 9001:2015</div>
-        <p class="subtitle">Plan editable + cronograma visual tipo Trello.</p>
+        <p class="subtitle">Plan en bullets + cronograma visual tipo Trello.</p>
 
         <details class="toggle" open>
           <summary>📚 Desarrollo</summary>
@@ -381,7 +396,9 @@
         <details class="toggle" open>
           <summary>📅 Cronograma Kanban (estilo Trello)</summary>
           <div class="content">
-            <div class="kanban-wrap"><div class="kanban" id="board"></div></div>
+            <div class="kanban-wrap">
+              <div class="kanban" id="board"></div>
+            </div>
           </div>
         </details>
       </section>
@@ -442,6 +459,9 @@
     </div>
   </div>
 
+  <!-- SheetJS (para exportar .xlsx real) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <script>
   // ---------- Helpers ----------
   const $ = s=>document.querySelector(s); const $$ = s=>Array.from(document.querySelectorAll(s));
@@ -458,15 +478,18 @@
   // ---------- Test Cases Table ----------
   const tcDefault=[
     {id:'TC-RF-01', tipo:'RF', req:'Registrar usuario', tecnica:'Equivalencias', pre:'Formulario limpio', datos:'roles válidos/contraseñas', pasos:'Completar y enviar', esperado:'Alta ó mensajes de error', metrica:'100% válidos/100% rechazo inválidos', estado:'Pendiente'},
-    {id:'TC-RF-02', tipo:'RF', req:'Consulta calidad del aire (API)', tecnica:'Equivalencias', pre:'apiKey válida/ inválida', datos:'ciudad, rango', pasos:'GET /air', esperado:'200<3s ó 401', metrica:'t_resp <3s', estado:'Pendiente'},
-    {id:'TC-RF-03', tipo:'RF', req:'Predicción contaminación', tecnica:'Valores Límite', pre:'dataset listo', datos:'0,35,36,150,151', pasos:'Invocar modelo', esperado:'clase correcta', metrica:'AUC ≥ 0.80', estado:'Pendiente'},
-    {id:'TC-RF-04', tipo:'RF', req:'Reporte PDF semanal', tecnica:'Valores Límite', pre:'cron configurado', datos:'semana T', pasos:'Esperar job', esperado:'PDF lunes ≤08:00', metrica:'100% entregas', estado:'Pendiente'},
-    {id:'TC-RF-05', tipo:'RF', req:'Clasificación de quejas', tecnica:'Tablas de Decisión', pre:'reglas definidas', datos:'tipo×gravedad', pasos:'Enviar queja', esperado:'ruta correcta', metrica:'100% reglas', estado:'Pendiente'},
-    {id:'TC-RNF-01', tipo:'RNF', req:'Rendimiento API predicción', tecnica:'Valores Límite', pre:'JMeter listo', datos:'50/100/200 rqm', pasos:'Ejecutar test', esperado:'P95 ≤ 0.8/1.2/2s', metrica:'P95', estado:'Pendiente'},
-    {id:'TC-RNF-02', tipo:'RNF', req:'Compatibilidad web', tecnica:'Equivalencias', pre:'navegadores', datos:'Chrome/Firefox/Edge/Safari', pasos:'Recorrer flujos', esperado:'UI OK', metrica:'≥95% casos', estado:'Pendiente'},
-    {id:'TC-RNF-03', tipo:'RNF', req:'Seguridad login', tecnica:'Tablas de Decisión', pre:'WAF/validaciones', datos:'normal vs SQLi', pasos:'Intentar login', esperado:'Bloqueo ataque', metrica:'100% bloqueo', estado:'Pendiente'},
-    {id:'TC-RF-06', tipo:'RF', req:'Aut. n8n alertas', tecnica:'Tablas de Decisión', pre:'umbrales', datos:'eventos críticos', pasos:'Simular evento', esperado:'notificación', metrica:'MTTA ≤2m', estado:'Pendiente'},
-    {id:'TC-RF-07', tipo:'RF', req:'Dashboard ciudadanía', tecnica:'Equivalencias', pre:'dataset', datos:'ciudad/Zona', pasos:'Abrir vista', esperado:'ICA visible', metrica:'SUS ≥80', estado:'Pendiente'}
+    {id:'TC-RF-02', tipo:'RF', req:'Consulta calidad del aire (API)', tecnica:'Equivalencias', pre:'apiKey válida/ inválida', datos:'ciudad, rango', pasos:'Llamar API con key válida, Repetir con key inválida', esperado:'200<3s ó 401', metrica:'t_resp <3s', estado:'Pendiente'},
+    {id:'TC-RF-03', tipo:'RF', req:'Predicción contaminación', tecnica:'Valores Límite', pre:'Diámetro de contaminación', datos:'0,35,36,150,151', pasos:'Calcular Índice de calidad de aire', esperado:'clasificación correcta', metrica:'AUC ≥ 0.80', estado:'Pendiente'},
+    {id:'TC-RF-04', tipo:'RF', req:'Reporte PDF semanal', tecnica:'Valores Límite', pre:'cronograma semanal', datos:'ejecuciones semanales', pasos:'revisiones de ejecuciones semanales', esperado:'PDF lunes ≤08:00', metrica:'100% entregas', estado:'Pendiente'},
+    {id:'TC-RF-05', tipo:'RF', req:'Clasificación de quejas', tecnica:'Tablas de Decisión', pre:'reglas definidas', datos:'tipo×gravedad', pasos:'Enviar queja para clasificarla', esperado:'ruta correcta', metrica:'100% reglas', estado:'Pendiente'},
+    {id:'TC-RF-06', tipo:'RF', req:'Aut. n8n alertas', tecnica:'Tablas de Decisión', pre:'predicción de datos', datos:'eventos críticos', pasos:'Simular evento', esperado:'notificación', metrica:'MTTA ≤2m', estado:'Pendiente'},
+    
+    {id:'TC-RNF-01', tipo:'RNF', req:'Rendimiento API predicción', tecnica:'Valores Límite', pre:'Concurrencia de datos', datos:'50/100/200 rqm', pasos:'Ejecutar pruebas', esperado:'P95 ≤ 0.8/1.2/2s', metrica:'P95', estado:'Pendiente'},
+    {id:'TC-RNF-02', tipo:'RNF', req:'Compatibilidad web', tecnica:'Partición de Equivalencias', pre:'navegadores', datos:'Chrome/Firefox/Edge/Safari', pasos:'Recorrer flujos', esperado:'UI OK', metrica:'≥95% casos', estado:'Pendiente'},
+    {id:'TC-RNF-03', tipo:'RNF', req:'Seguridad login', tecnica:'Tablas de Decisión', pre:'Validaciones', datos:'Datos del Usuario', pasos:'Intentar login', esperado:'Bloqueo ataque', metrica:'100% bloqueo', estado:'Pendiente'},
+    {id:'TC-RNF-04', tipo:'RF', req:'Usabilidad de Dashboard de ciudadanía', tecnica:'Análisis de Valores Límite', pre:'Tiempo objetivo ≤ 120 s', datos:'ciudad/Zona', pasos:'Usuario consulta KPI', esperado:'Tarea rápida y sin errores', metrica:'SUS ≥80', estado:'Pendiente'},
+
+    
   ];
   const tcKey='qa_tc_rows'; let tcRows=LS.load(tcKey,tcDefault);
   const tcBody=$('#tcTable tbody'); const tcCount=$('#tcCount');
@@ -488,8 +511,41 @@
   $('#tcSearch').addEventListener('input',e=>renderTable(e.target.value));
   $('#addRow').onclick=()=>{ const next={id:`TC-NEW-${fmtId(tcRows.length+1)}`, tipo:'RF', req:'', tecnica:'Equivalencias', pre:'', datos:'', pasos:'', esperado:'', metrica:'', estado:'Pendiente'}; tcRows.unshift(next); LS.save(tcKey,tcRows); renderTable($('#tcSearch').value||''); };
 
-  // ---------- Test Plan (bullets; sin campos editables) ----------
-  // Esta sección no requiere JS. Se mantiene el bloque para compatibilidad.
+  // ---------- Export: JSON / CSV / Excel (.xlsx) ----------
+  function downloadBlob(data, filename, mime){
+    const blob=new Blob([data],{type:mime}); const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  // CSV
+  function exportTCsToCSV(){
+    const cols=['id','tipo','req','tecnica','pre','datos','pasos','esperado','metrica','estado'];
+    const header=['ID','Tipo','Requisito','Técnica','Precondiciones','Datos','Pasos','Resultado Esperado','Métrica','Estado'];
+    const rows = tcRows.map(r=> cols.map(k=> `"${String(r[k]??'').replace(/\"/g,'\"\"')}"`).join(',') );
+    const csv = [header.join(','), ...rows].join('\n');
+    downloadBlob(csv, 'test_cases.csv', 'text/csv;charset=utf-8;');
+  }
+  $('#exportCsvBtn').onclick = exportTCsToCSV;
+
+  // Excel (.xlsx) con SheetJS
+  function exportTCsToExcel(){
+    const header=['ID','Tipo','Requisito','Técnica','Precondiciones','Datos','Pasos','Resultado Esperado','Métrica','Estado'];
+    const keys=['id','tipo','req','tecnica','pre','datos','pasos','esperado','metrica','estado'];
+    // construir filas ordenadas por keys para respetar columnas
+    const data = tcRows.map(r => {
+      const row={}; keys.forEach((k,i)=> row[header[i]] = r[k] ?? ''); return row;
+    });
+    const ws = XLSX.utils.json_to_sheet(data, {header});
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'TestCases');
+    XLSX.writeFile(wb, 'test_cases.xlsx');
+  }
+  $('#exportExcelBtn').onclick = exportTCsToExcel;
+
+  // Export/Import JSON
+  $('#exportBtn').onclick=()=>{ downloadBlob(JSON.stringify({tc:tcRows, kb:LS.load('qa_kanban_v1',{})}, null, 2), 'organizador_testing.json', 'application/json'); };
+  $('#importFile').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const txt=await f.text(); try{ const data=JSON.parse(txt); if(data.tc){ tcRows=data.tc; LS.save(tcKey,tcRows); renderTable($('#tcSearch').value||''); } if(data.kb){ LS.save('qa_kanban_v1',data.kb); kb=data.kb; renderBoard(); attachHandlers(); } }catch{ alert('JSON inválido'); } };
+  $('#resetBtn').onclick=()=>{ if(confirm('¿Restablecer todo el contenido?')){ localStorage.removeItem('qa_tc_rows'); localStorage.removeItem('qa_kanban_v1'); location.reload(); } };
 
   // ---------- Kanban ----------
   const board=$('#board'); const kbKey='qa_kanban_v1';
@@ -522,10 +578,10 @@
 
   renderBoard(); setupDnD(); attachHandlers();
 
-  // Export / Import / Reset
-  $('#exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify({tc:tcRows, plan:LS.load('qa_test_plan',{}), kb}, null, 2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='organizador_testing.json'; a.click(); URL.revokeObjectURL(a.href); };
-  $('#importFile').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const txt=await f.text(); try{ const data=JSON.parse(txt); if(data.tc){ tcRows=data.tc; LS.save(tcKey,tcRows); renderTable($('#tcSearch').value||''); } if(data.plan){ LS.save('qa_test_plan',data.plan); location.reload(); } if(data.kb){ kb=data.kb; LS.save(kbKey,kb); renderBoard(); attachHandlers(); } }catch{ alert('JSON inválido'); } };
-  $('#resetBtn').onclick=()=>{ if(confirm('¿Restablecer todo el contenido?')){ localStorage.removeItem('qa_tc_rows'); localStorage.removeItem('qa_test_plan'); localStorage.removeItem('qa_kanban_v1'); location.reload(); } };
+  // Export/Import JSON de cabecera
+  $('#exportBtn').onclick=()=>{ const payload={tc:tcRows, kb}; downloadBlob(JSON.stringify(payload,null,2),'organizador_testing.json','application/json'); };
+  $('#importFile').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const txt=await f.text(); try{ const data=JSON.parse(txt); if(data.tc){ tcRows=data.tc; LS.save(tcKey,tcRows); renderTable($('#tcSearch').value||''); } if(data.kb){ kb=data.kb; LS.save(kbKey,kb); renderBoard(); attachHandlers(); } }catch{ alert('JSON inválido'); } };
+  $('#resetBtn').onclick=()=>{ if(confirm('¿Restablecer todo el contenido?')){ localStorage.removeItem('qa_tc_rows'); localStorage.removeItem('qa_kanban_v1'); location.reload(); } };
 
   // Header quick scroll
   window.scrollToId = id => document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
