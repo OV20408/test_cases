@@ -123,31 +123,39 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <div class="title">Plataforma de Datos Ambientales Industrial-Urbanos con Análisis Predictivo y Automatización</div>
+          <div class="title">Organizador Gráfico – Testing & QA</div>
+          <div class="subtitle">Pseudo-Notion + Trello · lectura cómoda · accesible</div>
         </div>
       </div>
-      
+      <div class="toolbar">
+        <button class="btn" id="toggleTheme" title="Tema claro/oscuro">🌓 Tema</button>
+        <button class="btn" id="densityBtn" title="Alternar densidad">↕️ Densidad</button>
+        <button class="btn" id="exportBtn" title="Exportar JSON">⬇️ Exportar JSON</button>
+        <label class="btn" for="importFile" title="Importar JSON">⬆️ Importar</label>
+        <input id="importFile" type="file" accept="application/json" hidden>
+        <button class="btn" id="resetBtn" title="Restablecer todo">♻️ Reset</button>
+      </div>
     </header>
 
     <aside>
       <input class="search" id="searchNav" placeholder="Buscar…" />
       <nav class="nav">
-        <div class="item" onclick="scrollToId('d1')"> Dinámica 1</div>
-        <div class="item" onclick="scrollToId('d2')"> Dinámica 2</div>
+        <div class="item" onclick="scrollToId('d1')">🧪 Dinámica 1</div>
+        <div class="item" onclick="scrollToId('d2')">📋 Dinámica 2</div>
       </nav>
       <div class="tree">
         <details open>
-          <summary> ORGANIZADOR GRÁFICO – Testing & QA</summary>
+          <summary>📋 ORGANIZADOR GRÁFICO – Testing & QA</summary>
           <details open>
-            <summary> DINÁMICA 1: Elaboración de Test Cases</summary>
-            <div class="leaf"> Desarrollo </div>
-            <div class="leaf"> Repositorio de Test Cases</div>
-            <div class="leaf"> Herramientas (TestLink vs Squash)</div>
+            <summary>🧪 DINÁMICA 1: Elaboración de Test Cases</summary>
+            <div class="leaf">📚 Desarrollo (5 puntos detallados)</div>
+            <div class="leaf">📊 Repositorio de Test Cases</div>
+            <div class="leaf">🛠️ Herramientas (TestLink vs Squash)</div>
           </details>
           <details open>
-            <summary> DINÁMICA 2: Test Plan ISO 9001:2015</summary>
-            <div class="leaf"> Desarrollo</div>
-            <div class="leaf"> Cronograma Kanban (estilo Trello)</div>
+            <summary>📋 DINÁMICA 2: Test Plan ISO 9001:2015</summary>
+            <div class="leaf">📚 Desarrollo</div>
+            <div class="leaf">📅 Cronograma Kanban (estilo Trello)</div>
           </details>
         </details>
       </div>
@@ -157,11 +165,11 @@
       <div class="container">
       <!-- DINÁMICA 1 -->
       <section id="d1" class="block">
-        <div class="h"> DINÁMICA 1 — Elaboración de Test Cases</div>
+        <div class="h">🧪 DINÁMICA 1 — Elaboración de Test Cases</div>
         <p class="subtitle">Cumple con los <b>5 puntos de desarrollo</b> solicitados, con ejemplos claros y visuales.</p>
 
         <details class="toggle" open>
-          <summary> Desarrollo — 5 apartados (UX mejorado)</summary>
+          <summary>📚 Desarrollo — 5 apartados (UX mejorado)</summary>
           <div class="content">
             <div class="steps">
               <!-- 1. Repaso teórico -->
@@ -213,7 +221,7 @@
                       <li><b>Resultados:</b> alertas, reportes PDF, tendencias ICA.</li>
                     </ul>
                   </div>
-                  <div class="callout"> <b>Objetivo del módulo:</b> transformar datos urbano-industriales en <b>predicciones</b> y <b>acciones</b> (alertas/reportes).</div>
+                  <div class="callout">🎯 <b>Objetivo del módulo:</b> transformar datos urbano-industriales en <b>predicciones</b> y <b>acciones</b> (alertas/reportes).</div>
                 </div>
               </article>
 
@@ -279,12 +287,13 @@
         </details>
 
         <details class="toggle" open>
-          <summary> Repositorio de Test Cases (10 ítems editables)</summary>
+          <summary>📊 Repositorio de Test Cases (10 ítems editables)</summary>
           <div class="content">
             <div class="table-toolbar">
               <input id="tcSearch" class="input" placeholder="Filtrar por texto…"/>
               <button class="btn" id="addRow">➕ Nueva fila</button>
               <button class="btn" id="exportExcelBtn">🧾 Exportar Excel (.xlsx)</button>
+              <button class="btn" id="exportCsvBtn">📄 Exportar CSV</button>
               <span class="subtitle" id="tcCount"></span>
             </div>
             <div style="overflow:auto">
@@ -338,11 +347,11 @@
 
       <!-- DINÁMICA 2 -->
       <section id="d2" class="block">
-        <div class="h"> DINÁMICA 2 — Test Plan ISO 9001:2015</div>
+        <div class="h">📋 DINÁMICA 2 — Test Plan ISO 9001:2015</div>
         <p class="subtitle">Plan en bullets + cronograma visual tipo Trello.</p>
 
         <details class="toggle" open>
-          <summary> Desarrollo</summary>
+          <summary>📚 Desarrollo</summary>
           <div class="content prose">
             <h4>Objetivo de pruebas</h4>
             <ul>
