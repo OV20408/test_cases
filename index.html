@@ -194,11 +194,11 @@
                 <div class="grid-2">
                   <div class="step">
                     <h4>✅ Buen caso</h4>
-                    <p><b>Objetivo:</b> Consultar calidad del aire con <code>apiKey</code> válida.</p>
+                    <p><b>Objetivo:</b> Consultar calidad del aire con apiKey válida.</p>
                     <ul>
-                      <li><b>Precondición:</b> <code>apiKey</code> válida registrada.</li>
+                      <li><b>Precondición:</b> apiKey válida registrada.</li>
                       <li><b>Datos:</b> ciudad=SCZ, fecha=hoy.</li>
-                      <li><b>Pasos:</b> GET <code>/air?city=SCZ</code>.</li>
+                      <li><b>Pasos:</b> GET /air?city=SCZ.</li>
                       <li><b>Esperado:</b> HTTP 200 en &lt; 3 s con payload ICA.</li>
                       <li><b>Criterio:</b> t_resp P95 &lt; 3000 ms; esquema JSON válido.</li>
                     </ul>
